@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Support and Resistance Exponent</title>
+    <style>
+        .slide-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #cbcbcb;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .slide-bar-inner {
+            height: 100%;
+            background-color: #4caf50;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 0.5s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .slide-bar-label {
+            margin-top: 5px;
+        }
+    </style>
+    <script>
+        function calculateSupportResistance() {
+            fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+                .then(response => response.json())
+                .then(data => {
+                    var btcusdtPrice = parseFloat(data.price);
+                    var x = 5;
+                    var support = 0;
+                    var resistance = 0;
+
+                    while (x <= 300) {
+                        var square = x * x;
+
+                        if (square < btcusdtPrice) {
+                            support = square;
+                        } else {
+                            resistance = square;
+                            break;
+                        }
+
+                        x++;
+                    }
+
+                    document.getElementById("btcusdtPrice").innerHTML = btcusdtPrice;
+                    document.getElementById("support").innerHTML = support;
+                    document.getElementById("resistance").innerHTML = resistance;
+
+                    // Update the slide bar
+                    var slideBarInnerWidth = (btcusdtPrice - support) / (resistance - support) * 100;
+                    document.getElementById("slideBarInner").style.width = slideBarInnerWidth + "%";
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        }
+
+        setInterval(calculateSupportResistance, 1000); // Update every 3 seconds
+    </script>
+</head>
+<body>
+<center>
+    <br><br><br><br><br><br><br><br><br><h3>พลังเลขยกกำลัง</h3><br><font color="grey">แนวรับ-----------------------------------------------------------แนวต้าน</font>
+    <table>
+        <td><span id="support"></span></td>
+        <td><div class="slide-bar"><div id="slideBarInner" class="slide-bar-inner"></div></div></td>
+        <td><span id="resistance"></span></td>
+    </table>
+    <p>
+        <span id="btcusdtPrice"></span><br>
+    </p>
+</center>
+</body>
+</html>
